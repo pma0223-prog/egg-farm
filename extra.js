@@ -37,7 +37,7 @@ var st=document.createElement('style');st.textContent=css;document.head.appendCh
 function nested(s,x,y,w,h){return s.replace('<svg ','<svg x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" ');}
 
 /* ============ 색칠공부 ============ */
-var SW=[['빨강','#FF6B6B'],['주황','#FFA94D'],['노랑','#FFD43B'],['초록','#69DB7C'],['하늘','#74C0FC'],['파랑','#4C6EF5'],['보라','#B197FC'],['분홍','#FFA8C5'],['갈색','#A9744F'],['지우개','#FFFFFF']];
+var SW=[['빨강','#FF6B6B'],['주황','#FFA94D'],['노랑','#FFD43B'],['초록','#69DB7C'],['하늘','#74C0FC'],['파랑','#4C6EF5'],['보라','#B197FC'],['분홍','#FFA8C5'],['갈색','#A9744F'],['흰색','#FFFFFF']];
 var EYES='<circle cx="37" cy="51" r="6.5" fill="#2b2b2b" pointer-events="none"/><circle cx="63" cy="51" r="6.5" fill="#2b2b2b" pointer-events="none"/><circle cx="39.3" cy="48.6" r="2.4" fill="#fff" pointer-events="none"/><circle cx="65.3" cy="48.6" r="2.4" fill="#fff" pointer-events="none"/>';
 var EYES2='<circle cx="40" cy="48" r="5.5" fill="#2b2b2b" pointer-events="none"/><circle cx="60" cy="48" r="5.5" fill="#2b2b2b" pointer-events="none"/><circle cx="41.8" cy="46" r="2" fill="#fff" pointer-events="none"/><circle cx="61.8" cy="46" r="2" fill="#fff" pointer-events="none"/>';
 var PICS=[
@@ -74,11 +74,76 @@ var PICS=[
   ['ellipse','cx="50" cy="14" rx="9" ry="14" transform="rotate(240 50 30)"'],
   ['ellipse','cx="50" cy="14" rx="9" ry="14" transform="rotate(300 50 30)"'],
   ['circle','cx="50" cy="30" r="10"']
+ ]},
+ {name:'엄마 닭',vb:'0 0 100 100',decor:'<circle cx="76" cy="33" r="3.2" fill="#2b2b2b" pointer-events="none"/>',parts:[
+  ['path','d="M20 52Q2 34 10 20Q22 30 30 46Z"'],
+  ['rect','x="37" y="84" width="6" height="12" rx="2"'],
+  ['rect','x="53" y="84" width="6" height="12" rx="2"'],
+  ['ellipse','cx="48" cy="62" rx="32" ry="26"'],
+  ['ellipse','cx="44" cy="64" rx="18" ry="12" transform="rotate(-15 44 64)"'],
+  ['circle','cx="72" cy="36" r="16"'],
+  ['circle','cx="66" cy="19" r="6"'],
+  ['circle','cx="74" cy="16" r="6"'],
+  ['circle','cx="81" cy="20" r="5.5"'],
+  ['path','d="M86 33L99 38L86 43Z"'],
+  ['ellipse','cx="83" cy="50" rx="4" ry="6"']
+ ]},
+ {name:'농장 집',vb:'0 0 100 100',decor:'<line x1="38" y1="56" x2="62" y2="88" stroke="#5a4632" stroke-width="2" pointer-events="none"/><line x1="62" y1="56" x2="38" y2="88" stroke="#5a4632" stroke-width="2" pointer-events="none"/>',parts:[
+  ['circle','cx="86" cy="14" r="9"'],
+  ['rect','x="0" y="88" width="100" height="12"'],
+  ['rect','x="15" y="40" width="70" height="48"'],
+  ['polygon','points="8,42 50,12 92,42"'],
+  ['rect','x="38" y="56" width="24" height="32"'],
+  ['circle','cx="50" cy="31" r="7"'],
+  ['rect','x="20" y="52" width="12" height="12"'],
+  ['rect','x="68" y="52" width="12" height="12"']
+ ]},
+ {name:'나비',vb:'0 0 100 100',decor:'<path d="M48 22Q42 10 37 8M52 22Q58 10 63 8" stroke="#5a4632" stroke-width="2" fill="none" stroke-linecap="round" pointer-events="none"/>',parts:[
+  ['ellipse','cx="33" cy="38" rx="22" ry="20" transform="rotate(-25 33 38)"'],
+  ['ellipse','cx="67" cy="38" rx="22" ry="20" transform="rotate(25 67 38)"'],
+  ['ellipse','cx="38" cy="68" rx="16" ry="14" transform="rotate(20 38 68)"'],
+  ['ellipse','cx="62" cy="68" rx="16" ry="14" transform="rotate(-20 62 68)"'],
+  ['circle','cx="29" cy="36" r="6"'],
+  ['circle','cx="71" cy="36" r="6"'],
+  ['circle','cx="38" cy="68" r="5"'],
+  ['circle','cx="62" cy="68" r="5"'],
+  ['ellipse','cx="50" cy="54" rx="5" ry="24"'],
+  ['circle','cx="50" cy="26" r="6.5"']
+ ]},
+ {name:'무지개',vb:'0 0 100 100',decor:'',parts:[
+  ['circle','cx="85" cy="17" r="9"'],
+  ['path','d="M6 80A44 44 0 0 1 94 80L87 80A37 37 0 0 0 13 80Z"'],
+  ['path','d="M13 80A37 37 0 0 1 87 80L80 80A30 30 0 0 0 20 80Z"'],
+  ['path','d="M20 80A30 30 0 0 1 80 80L73 80A23 23 0 0 0 27 80Z"'],
+  ['path','d="M27 80A23 23 0 0 1 73 80L66 80A16 16 0 0 0 34 80Z"'],
+  ['path','d="M34 80A16 16 0 0 1 66 80L59 80A9 9 0 0 0 41 80Z"'],
+  ['path','d="M2 90Q-2 78 10 78Q12 68 24 71Q32 68 35 78Q44 80 40 90Z"'],
+  ['path','d="M62 90Q58 80 66 78Q68 68 80 71Q88 67 92 77Q100 79 95 90Z"']
+ ]},
+ {name:'사과나무',vb:'0 0 100 100',decor:'',parts:[
+  ['ellipse','cx="50" cy="95" rx="42" ry="6"'],
+  ['rect','x="44" y="58" width="12" height="38"'],
+  ['circle','cx="50" cy="36" r="30"'],
+  ['circle','cx="37" cy="32" r="6"'],
+  ['circle','cx="60" cy="26" r="6"'],
+  ['circle','cx="63" cy="48" r="6"'],
+  ['circle','cx="40" cy="50" r="6"']
  ]}
 ];
+function pickPic(){
+  var seen=save.cseen||[],left=[],i;
+  for(i=0;i<PICS.length;i++)if(seen.indexOf(i)<0)left.push(i);
+  if(!left.length){
+    var last=seen[seen.length-1];seen=[];
+    for(i=0;i<PICS.length;i++)if(i!==last)left.push(i);
+  }
+  var idx=left[rnd(left.length)];
+  save.cseen=seen.concat([idx]);persist();
+  return idx;
+}
 
 window.playColoring=function(x){
-  var pic=PICS[save.plays%PICS.length],n=pic.parts.length;
+  var pic=PICS[pickPic()],n=pic.parts.length;
   var cur='#FFD43B',curName='노랑',filled={},hist=[];
   var h='<div class="paper"><svg viewBox="'+pic.vb+'">';
   pic.parts.forEach(function(p,i){h+='<'+p[0]+' class="reg" data-i="'+i+'" fill="#FFFFFF" '+p[1]+'/>';});
@@ -86,7 +151,7 @@ window.playColoring=function(x){
   SW.forEach(function(s,i){h+='<button class="sw'+(i===2?' sel':'')+'" data-c="'+s[1]+'" data-n="'+s[0]+'" aria-label="'+s[0]+'" style="background:'+s[1]+'"></button>';});
   h+='</div>';
   x.stage.innerHTML=h;
-  x.ctl.innerHTML='<button class="btn sub" id="undo">↩ 되돌리기</button><button class="btn" id="done" disabled>✔ 다 칠했어요</button>';
+  x.ctl.innerHTML='<button class="btn sub" id="undo">↩ 되돌리기</button><button class="btn" id="done" disabled>✔ 다 그렸어요</button>';
   var regs=x.stage.querySelectorAll('.reg');
   function count(){return Object.keys(filled).length;}
   function refresh(){
@@ -104,7 +169,7 @@ window.playColoring=function(x){
       var i=+t.dataset.i;
       hist.push({i:i,fill:t.getAttribute('fill'),was:filled[i]});
       t.setAttribute('fill',cur);
-      if(cur==='#FFFFFF')delete filled[i];else filled[i]=1;
+      filled[i]=1;
       beep(660,.08,'triangle',.12);refresh();
     }
   };
