@@ -261,7 +261,7 @@ async function playColor(x){
     x.score(`${p+1}번째 문제 / ${problems}`);
     const cols=shuffle(COLORS).slice(0,len),pos=shuffle([...Array(12).keys()]).slice(0,len);
     x.cells.forEach(setEgg);
-    pos.forEach((ci,k)=>setChick(x.cells[ci],cols[k].c,`<i class="dot" style="background:${cols[k].c}"></i>${cols[k].n}`));
+    pos.forEach((ci,k)=>setChick(x.cells[ci],cols[k].c,cols[k].n));
     await sleep(500);
     let solved=false;
     while(!solved){
