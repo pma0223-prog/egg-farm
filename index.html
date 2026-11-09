@@ -104,12 +104,18 @@ const cheer=()=>[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.22,'tri
 
 /* ---------- 그림 ---------- */
 const COLORS=[{n:'노랑',c:'#FFD43B'},{n:'분홍',c:'#FF8FB1'},{n:'하늘',c:'#6EC6FF'},{n:'초록',c:'#7ED957'},{n:'보라',c:'#B39DDB'}];
-const chick=c=>`<svg viewBox="0 0 100 100"><ellipse cx="50" cy="66" rx="34" ry="30" fill="${c}" stroke="#00000022" stroke-width="2"/>
-<circle cx="50" cy="42" r="27" fill="${c}" stroke="#00000022" stroke-width="2"/>
-<ellipse cx="22" cy="66" rx="9" ry="15" fill="${c}" stroke="#00000022" stroke-width="2"/><ellipse cx="78" cy="66" rx="9" ry="15" fill="${c}" stroke="#00000022" stroke-width="2"/>
-<circle cx="40" cy="38" r="5" fill="#2b2b2b"/><circle cx="60" cy="38" r="5" fill="#2b2b2b"/>
-<circle cx="41.5" cy="36.5" r="1.8" fill="#fff"/><circle cx="61.5" cy="36.5" r="1.8" fill="#fff"/>
-<polygon points="43,48 57,48 50,58" fill="#F59E0B"/></svg>`;
+const chick=c=>`<svg viewBox="0 0 100 100"><ellipse cx="50" cy="93" rx="27" ry="5" fill="#0000001f"/>
+<ellipse cx="38" cy="91" rx="8" ry="3.5" fill="#F59E0B"/><ellipse cx="62" cy="91" rx="8" ry="3.5" fill="#F59E0B"/>
+<ellipse cx="14" cy="62" rx="8" ry="15" fill="${c}" stroke="#0000002e" stroke-width="2.5" transform="rotate(18 14 62)"/>
+<ellipse cx="86" cy="62" rx="8" ry="15" fill="${c}" stroke="#0000002e" stroke-width="2.5" transform="rotate(-18 86 62)"/>
+<ellipse cx="50" cy="57" rx="37" ry="35" fill="${c}" stroke="#0000002e" stroke-width="2.5"/>
+<ellipse cx="50" cy="72" rx="22" ry="16" fill="#fff" opacity=".28"/>
+<path d="M42 25Q39 13 47 19M50 23Q50 9 57 19M58 25Q63 15 65 24" stroke="#00000040" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+<circle cx="37" cy="51" r="6.5" fill="#2b2b2b"/><circle cx="63" cy="51" r="6.5" fill="#2b2b2b"/>
+<circle cx="39.3" cy="48.6" r="2.4" fill="#fff"/><circle cx="65.3" cy="48.6" r="2.4" fill="#fff"/>
+<circle cx="35.5" cy="53.5" r="1.2" fill="#fff"/><circle cx="61.5" cy="53.5" r="1.2" fill="#fff"/>
+<circle cx="25" cy="63" r="6" fill="#FF7A8A" opacity=".45"/><circle cx="75" cy="63" r="6" fill="#FF7A8A" opacity=".45"/>
+<path d="M43 59Q50 55 57 59Q50 70 43 59Z" fill="#F59E0B" stroke="#D97706" stroke-width="1.2" stroke-linejoin="round"/></svg>`;
 const egg=`<svg viewBox="0 0 100 100"><ellipse cx="50" cy="56" rx="30" ry="38" fill="#FFF8EC" stroke="#E0CFAE" stroke-width="3"/>
 <ellipse cx="40" cy="40" rx="8" ry="12" fill="#fff" opacity=".7"/></svg>`;
 const shell=`<svg viewBox="0 0 100 100"><path d="M18 62 L30 50 L40 64 L52 48 L64 64 L74 50 L84 62 L78 86 H24Z" fill="#FFF8EC" stroke="#E0CFAE" stroke-width="3"/></svg>`;
