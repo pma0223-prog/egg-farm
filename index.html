@@ -59,6 +59,7 @@ h1{margin:4px 0 2px;font-size:34px;text-align:center}
   border-radius:12px;padding:0 8px;font-size:17px;font-weight:700;white-space:nowrap;pointer-events:none}
 .cell .num{position:absolute;top:-6px;right:-6px;width:34px;height:34px;border-radius:50%;background:var(--ok);color:#fff;
   font-weight:800;font-size:22px;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.dot{display:inline-block;width:.85em;height:.85em;border-radius:50%;border:2px solid #5a4632;vertical-align:-.08em;margin:0 .3em 0 .4em}
 .pop{animation:pop .28s ease-out}
 @keyframes pop{0%{transform:scale(.2) translateY(30px)}70%{transform:scale(1.12)}100%{transform:scale(1)}}
 .glow{animation:glow .7s ease-in-out}
@@ -260,7 +261,7 @@ async function playColor(x){
     x.score(`${p+1}번째 문제 / ${problems}`);
     const cols=shuffle(COLORS).slice(0,len),pos=shuffle([...Array(12).keys()]).slice(0,len);
     x.cells.forEach(setEgg);
-    pos.forEach((ci,k)=>setChick(x.cells[ci],cols[k].c,cols[k].n));
+    pos.forEach((ci,k)=>setChick(x.cells[ci],cols[k].c,`<i class="dot" style="background:${cols[k].c}"></i>${cols[k].n}`));
     await sleep(500);
     let solved=false;
     while(!solved){
@@ -273,7 +274,7 @@ async function playColor(x){
       for(let k=0;k<len;k++){
         if(!alive(x.t))return;
         const c=x.cells[pos[k]];
-        x.msg(`${k+1}번째: ${cols[k].n}`);
+        $('#msg').innerHTML=`${k+1}번째: <i class="dot" style="background:${cols[k].c}"></i>${cols[k].n}`;
         c.firstChild.classList.remove('glow');void c.firstChild.offsetWidth;c.firstChild.classList.add('glow');
         beep(440+k*110,.4,'triangle');
         await sleep(1000);
