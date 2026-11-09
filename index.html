@@ -194,7 +194,7 @@ async function playWhack(x){
     x.score(`병아리 ${n}마리 만났어요 · 잡은 병아리 ${hit}마리`);
     let i;do{i=rnd(12);}while(i===last);last=i;
     const c=x.cells[i];let tapped=false;
-    setChick(c,COLORS[rnd(5)].c);
+    setChick(c,COLORS[0].c);
     c.onclick=()=>{if(tapped)return;tapped=true;hit++;peep();c.classList.add('hit');c.onclick=null;};
     const end=Date.now()+stay;
     while(Date.now()<end&&!tapped){await sleep(50);if(!alive(x.t))return;}
@@ -221,7 +221,7 @@ async function playTogether(x){
     [1,2].forEach((s,si)=>{
       let i;do{const opts=sideCells(s);i=opts[rnd(opts.length)];}while(i===last[si]);last[si]=i;
       const c=x.cells[i];picks.push(c);
-      setChick(c,COLORS[rnd(5)].c);
+      setChick(c,COLORS[0].c);
       c.onclick=()=>{if(state[si])return;state[si]=true;got[si]++;peep();c.classList.add('hit');c.onclick=null;show();};
     });
     const end=Date.now()+stay;
@@ -293,7 +293,7 @@ async function playMemory(x){
     if(!alive(x.t))return;
     x.score(`${p+1}번째 문제 / ${problems}`);
     x.cells.forEach(setEgg);
-    const pos=shuffle([...Array(12).keys()]).slice(0,k),cols=shuffle(COLORS);
+    const pos=shuffle([...Array(12).keys()]).slice(0,k),cols=Array(5).fill(COLORS[0]);
     let solved=false,miss=0;
     while(!solved){
       if(!alive(x.t))return;
