@@ -130,17 +130,18 @@ var PICS=[
   ['circle','cx="40" cy="50" r="6"']
  ]}
 ];
-function pickPic(){
-  var seen=save.cseen||[],left=[],i;
-  for(i=0;i<PICS.length;i++)if(seen.indexOf(i)<0)left.push(i);
+function pickUnseen(key,len){
+  var seen=save[key]||[],left=[],i;
+  for(i=0;i<len;i++)if(seen.indexOf(i)<0)left.push(i);
   if(!left.length){
     var last=seen[seen.length-1];seen=[];
-    for(i=0;i<PICS.length;i++)if(i!==last)left.push(i);
+    for(i=0;i<len;i++)if(i!==last)left.push(i);
   }
   var idx=left[rnd(left.length)];
-  save.cseen=seen.concat([idx]);persist();
+  save[key]=seen.concat([idx]);persist();
   return idx;
 }
+function pickPic(){return pickUnseen('cseen',PICS.length);}
 
 window.playColoring=function(x){
   var pic=PICS[pickPic()],n=pic.parts.length;
@@ -308,9 +309,74 @@ function sceneB(){
    '<ellipse cx="60" cy="70" rx="40" ry="16" fill="#fff"/><ellipse cx="95" cy="60" rx="30" ry="14" fill="#fff"/>';
 }
 
+function cloud(x,y,k){
+  return '<ellipse cx="'+x+'" cy="'+y+'" rx="'+(44*k)+'" ry="'+(18*k)+'" fill="#fff"/><ellipse cx="'+(x+30*k)+'" cy="'+(y-12*k)+'" rx="'+(30*k)+'" ry="'+(16*k)+'" fill="#fff"/>';
+}
+function sceneCarton(){
+  var s='<rect width="300" height="400" fill="#FFF3D6"/><circle cx="244" cy="62" r="34" fill="#FFD43B"/>'+cloud(70,70,1)+
+   '<rect x="25" y="150" width="250" height="215" rx="22" fill="#D9C3A0" stroke="#B99B6A" stroke-width="6"/>';
+  var xs=[65,150,235],ys=[195,262,329],k=0;
+  ys.forEach(function(cy){xs.forEach(function(cx){
+    s+='<circle cx="'+cx+'" cy="'+cy+'" r="31" fill="#B89B72"/>';
+    s+=(k===1||k===4||k===8)?nested(chick('#FFD43B'),cx-30,cy-36,60,60):nested(egg,cx-26,cy-28,52,52);
+    k++;
+  });});
+  return s;
+}
+function scenePond(){
+  var s='<rect width="300" height="400" fill="#BFE9FF"/><circle cx="240" cy="60" r="32" fill="#FFE066"/>'+cloud(80,80,1)+cloud(190,140,0.7)+
+   '<rect y="240" width="300" height="160" fill="#9AD870"/>'+
+   '<ellipse cx="150" cy="322" rx="142" ry="64" fill="#5BB5E8" stroke="#3F9AD0" stroke-width="4"/>'+
+   '<ellipse cx="95" cy="332" rx="26" ry="9" fill="#4FA85A"/><ellipse cx="205" cy="312" rx="22" ry="8" fill="#4FA85A"/><ellipse cx="170" cy="352" rx="28" ry="10" fill="#4FA85A"/>'+
+   '<circle cx="205" cy="308" r="6" fill="#FF8FB1"/><circle cx="95" cy="328" r="6" fill="#FF8FB1"/>'+
+   nested(chick('#FFD43B'),8,180,120,120)+nested(chick('#FFD43B'),140,268,64,64);
+  [[270,220],[285,236],[258,240]].forEach(function(p){s+='<rect x="'+p[0]+'" y="'+p[1]+'" width="6" height="'+(300-p[1])+'" fill="#5a8f3a"/><ellipse cx="'+(p[0]+3)+'" cy="'+p[1]+'" rx="6" ry="13" fill="#8D5A2B"/>';});
+  return s;
+}
+function sceneNight(){
+  var s='<rect width="300" height="400" fill="#1F2A5A"/><circle cx="228" cy="82" r="42" fill="#FFF4B8"/><circle cx="214" cy="70" r="8" fill="#F0E08F"/><circle cx="240" cy="96" r="6" fill="#F0E08F"/>';
+  [[40,50,3],[90,120,2.5],[150,40,3],[60,200,2],[130,170,2.5],[280,170,2.5],[20,130,2],[110,70,2],[190,150,2]].forEach(function(p){s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="'+p[2]+'" fill="#fff"/>';});
+  s+='<ellipse cx="150" cy="430" rx="280" ry="150" fill="#2F6B4F"/>'+nested(chick('#FFD43B'),82,225,136,136)+nested(egg,28,330,52,52)+nested(egg,222,340,48,48);
+  return s;
+}
+function sceneSun(){
+  var s='<rect width="300" height="400" fill="#BDEBFF"/><rect y="300" width="300" height="100" fill="#8ED16F"/>'+cloud(200,60,0.8);
+  [[55,130,46],[245,110,40],[150,70,34]].forEach(function(f){
+    var x=f[0],y=f[1],r=f[2],a;
+    s+='<rect x="'+(x-4)+'" y="'+y+'" width="8" height="'+(330-y)+'" fill="#4E9B3A"/>';
+    for(a=0;a<360;a+=36){s+='<ellipse cx="'+x+'" cy="'+(y-r*0.85)+'" rx="'+(r*0.3)+'" ry="'+(r*0.5)+'" fill="#FFC53D" transform="rotate('+a+' '+x+' '+y+')"/>';}
+    s+='<circle cx="'+x+'" cy="'+y+'" r="'+(r*0.55)+'" fill="#7A4A21"/>';
+  });
+  s+=nested(chick('#FFD43B'),84,240,132,132);
+  return s;
+}
+function sceneRainbow(){
+  var s='<rect width="300" height="400" fill="#E6F6FF"/>';
+  ['#FF6B6B','#FFA94D','#FFD43B','#69DB7C','#74C0FC','#B197FC'].forEach(function(c,i){
+    var r=132-i*16;
+    s+='<path d="M'+(150-r)+' 300A'+r+' '+r+' 0 0 1 '+(150+r)+' 300" fill="none" stroke="'+c+'" stroke-width="16"/>';
+  });
+  s+=cloud(40,300,0.9)+cloud(262,300,0.9)+'<ellipse cx="150" cy="420" rx="230" ry="100" fill="#A5DC7B"/>'+
+   nested(chick('#FFD43B'),92,262,116,116)+nested(egg,22,330,50,50)+nested(chick('#FFD43B'),226,324,60,60);
+  return s;
+}
+function sceneSnow(){
+  var s='<rect width="300" height="400" fill="#DDF1FF"/>',i;
+  [[52,230],[250,245]].forEach(function(p){
+    s+='<rect x="'+(p[0]-6)+'" y="'+(p[1]+40)+'" width="12" height="40" fill="#8D5A2B"/>'+
+       '<polygon points="'+p[0]+','+(p[1]-80)+' '+(p[0]-30)+','+p[1]+' '+(p[0]+30)+','+p[1]+'" fill="#3E8E5E"/>'+
+       '<polygon points="'+p[0]+','+(p[1]-40)+' '+(p[0]-40)+','+(p[1]+45)+' '+(p[0]+40)+','+(p[1]+45)+'" fill="#3E8E5E"/>'+
+       '<polygon points="'+p[0]+','+(p[1]-80)+' '+(p[0]-12)+','+(p[1]-52)+' '+(p[0]+12)+','+(p[1]-52)+'" fill="#fff"/>';
+  });
+  s+='<ellipse cx="150" cy="410" rx="270" ry="120" fill="#fff"/>'+nested(chick('#FFD43B'),84,236,132,132)+'<rect x="104" y="330" width="92" height="15" rx="7" fill="#FF6B6B"/><rect x="176" y="330" width="14" height="38" rx="6" fill="#FF6B6B"/>';
+  for(i=0;i<26;i++){s+='<circle cx="'+((i*47+13)%300)+'" cy="'+((i*83+21)%330)+'" r="'+(2+(i%3))+'" fill="#fff"/>';}
+  return s;
+}
+var SCENES=[sceneA,sceneB,sceneCarton,scenePond,sceneNight,sceneSun,sceneRainbow,sceneSnow];
+
 window.playPuzzle=function(x){
   var dim=[[2,2],[2,3],[3,3],[3,4],[3,4],[4,4]][Math.min(x.lv,5)],cols=dim[0],rows=dim[1],N=cols*rows;
-  var scene=save.plays%2===0?sceneA():sceneB();
+  var scene=SCENES[pickUnseen('pseen',SCENES.length)]();
   var arr=[],i,sel=-1,won=false;
   for(i=0;i<N;i++)arr.push(i);
   do{arr=shuffle(arr);}while(arr.every(function(v,k){return v===k;}));
