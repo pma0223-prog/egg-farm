@@ -203,7 +203,7 @@ const setChick=(c,col,label)=>{c.innerHTML=chick(col)+(label?`<span class="lbl">
 
 /* ---------- 1단계: 병아리 잡기 ---------- */
 async function playWhack(x){
-  const total=10, stay=3200-x.lv*350;
+  const total=10, stay=3400-x.lv*200;
   let hit=0,last=-1;
   const wiggle=c=>()=>{c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');beep(330,.08,'sine',.08);};
   x.cells.forEach(c=>c.onclick=wiggle(c));   // 빈 알을 눌러도 살짝 흔들리기만 한다
@@ -227,7 +227,7 @@ async function playWhack(x){
 
 /* ---------- 함께 잡기 (한 화면, 왼쪽/오른쪽) ---------- */
 async function playTogether(x){
-  const rounds=12, stay=3600-x.lv*300, got=[0,0], last=[-1,-1];
+  const rounds=12, stay=3600-x.lv*200, got=[0,0], last=[-1,-1];
   const wiggle=c=>()=>{c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');beep(330,.08,'sine',.08);};
   const sideCells=s=>x.cells.map((c,i)=>i).filter(i=>x.cells[i].dataset.side==s);
   x.cells.forEach(c=>c.onclick=wiggle(c));
