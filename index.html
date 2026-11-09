@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>계란 한 판</title>
+<style>
+:root{
+  --bg:#FFF6E0; --ink:#3B2A1A; --brand:#F59E0B; --brand-d:#B45309;
+  --tray:#D9C3A0; --hole:#B89B72; --card:#FFFFFF; --ok:#2F9E44; --line:#8D6E4B;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
+  font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;font-size:22px}
+body{display:flex;justify-content:center}
+#app{width:100%;max-width:560px;min-height:100%;display:flex;flex-direction:column;padding:12px 16px 24px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.btn{font:inherit;font-weight:700;border:0;border-radius:18px;padding:14px 22px;min-height:60px;
+  background:var(--brand);color:#fff;box-shadow:0 5px 0 var(--brand-d);cursor:pointer}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--brand-d)}
+.btn.sub{background:#fff;color:var(--brand-d);border:3px solid var(--brand);box-shadow:0 5px 0 #E3C58A}
+h1{margin:4px 0 2px;font-size:34px;text-align:center}
+.sub-t{text-align:center;margin:0 0 12px;color:#7a5a38}
+.msg{min-height:68px;text-align:center;font-size:26px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:4px 0}
+.score{text-align:center;font-size:22px;color:#7a5a38;margin-bottom:6px}
+
+/* 농장 나무 */
+.tree{position:relative;padding-left:34px;margin-top:6px}
+.tree::before{content:"";position:absolute;left:12px;top:0;bottom:36px;width:12px;border-radius:6px;background:var(--line)}
+.root{position:absolute;left:-6px;bottom:0;font-size:44px}
+.branch{position:relative;display:block;width:100%;text-align:left;font:inherit;background:var(--card);
+  border:3px solid #EAD7B0;border-radius:22px;padding:14px 16px;margin-bottom:18px;cursor:pointer;color:var(--ink);
+  box-shadow:0 5px 0 #E3C58A}
+.branch:active{transform:translateY(4px);box-shadow:0 1px 0 #E3C58A}
+.branch::before{content:"";position:absolute;left:-22px;top:50%;width:22px;height:10px;background:var(--line);border-radius:5px}
+.b-title{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:26px}
+.b-title small{font-size:18px;font-weight:600;color:#7a5a38}
+.b-desc{font-size:19px;color:#7a5a38;margin:2px 0 8px}
+.nodes{display:flex;gap:8px;justify-content:space-between}
+.node{flex:1;aspect-ratio:1;max-width:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:34px;background:#F4EBD6;border:3px dashed #D5BE90;color:#c9b27f}
+.node.on{background:#FFF2B8;border:3px solid var(--brand);color:inherit}
+.farm-count{text-align:center;font-size:24px;font-weight:700;margin:6px 0 4px}
+
+/* 달걀판 */
+.carton{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;background:var(--tray);padding:14px;border-radius:26px;
+  box-shadow:inset 0 0 0 4px #C5AB82, 0 6px 0 #B99B6A;margin:6px auto 14px;
+  width:100%;max-width:max(300px,calc((100vh - 290px) * .75))}
+.carton.cols4{grid-template-columns:repeat(4,1fr);gap:10px;max-width:max(300px,calc((100vh - 290px) * 1.25))}
+.cell.p1{outline:5px solid #F59E0B;outline-offset:-1px}
+.cell.p2{outline:5px solid #3B82F6;outline-offset:-1px}
+.cell{position:relative;aspect-ratio:1/1;border-radius:50%;background:var(--hole);
+  box-shadow:inset 0 8px 10px rgba(0,0,0,.28);cursor:pointer;display:flex;align-items:center;justify-content:center;overflow:visible}
+.cell svg{width:92%;height:92%;pointer-events:none}
+.cell .lbl{position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);background:#fff;border:2px solid var(--line);
+  border-radius:12px;padding:0 8px;font-size:17px;font-weight:700;white-space:nowrap;pointer-events:none}
+.cell .num{position:absolute;top:-6px;right:-6px;width:34px;height:34px;border-radius:50%;background:var(--ok);color:#fff;
+  font-weight:800;font-size:22px;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.pop{animation:pop .28s ease-out}
+@keyframes pop{0%{transform:scale(.2) translateY(30px)}70%{transform:scale(1.12)}100%{transform:scale(1)}}
+.glow{animation:glow .7s ease-in-out}
+@keyframes glow{0%,100%{transform:scale(1)}40%{transform:scale(1.18);filter:drop-shadow(0 0 14px #fff)}}
+.shake{animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.hit::after{content:"💛";position:absolute;font-size:52px;animation:rise .7s forwards;pointer-events:none}
+@keyframes rise{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-60px)}}
+.row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* 결과창 */
+.overlay{position:fixed;inset:0;background:rgba(59,42,26,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}
+.modal{background:#fff;border-radius:28px;padding:26px 22px;max-width:480px;width:100%;text-align:center}
+.modal h2{margin:0 0 8px;font-size:32px}
+.big{font-size:96px;line-height:1.1}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ---------- 저장 ---------- */
+const KEY='egg-farm-v1';
+let save={nodes:{whack:0,color:0,memory:0},plays:0,sound:true};
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.nodes)save=Object.assign(save,s);}catch(e){}
+save.nodes=Object.assign({whack:0,color:0,memory:0,together:0},save.nodes);
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(save));}catch(e){}}
+
+/* ---------- 소리 ---------- */
+let actx=null;
+function beep(f,d=.15,type='sine',vol=.18){
+  if(!save.sound)return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const o=actx.createOscillator(),g=actx.createGain();
+    o.type=type;o.frequency.value=f;g.gain.value=vol;
+    o.connect(g);g.connect(actx.destination);
+    g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+d);
+    o.start();o.stop(actx.currentTime+d);
+  }catch(e){}
+}
+const peep=()=>{beep(1200,.08,'triangle');setTimeout(()=>beep(1600,.1,'triangle'),90);};
+const oops=()=>beep(260,.2,'sine',.12);
+const cheer=()=>[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.22,'triangle'),i*130));
+
+/* ---------- 그림 ---------- */
+const COLORS=[{n:'노랑',c:'#FFD43B'},{n:'분홍',c:'#FF8FB1'},{n:'하늘',c:'#6EC6FF'},{n:'초록',c:'#7ED957'},{n:'보라',c:'#B39DDB'}];
+const chick=c=>`<svg viewBox="0 0 100 100"><ellipse cx="50" cy="66" rx="34" ry="30" fill="${c}" stroke="#00000022" stroke-width="2"/>
+<circle cx="50" cy="42" r="27" fill="${c}" stroke="#00000022" stroke-width="2"/>
+<ellipse cx="22" cy="66" rx="9" ry="15" fill="${c}" stroke="#00000022" stroke-width="2"/><ellipse cx="78" cy="66" rx="9" ry="15" fill="${c}" stroke="#00000022" stroke-width="2"/>
+<circle cx="40" cy="38" r="5" fill="#2b2b2b"/><circle cx="60" cy="38" r="5" fill="#2b2b2b"/>
+<circle cx="41.5" cy="36.5" r="1.8" fill="#fff"/><circle cx="61.5" cy="36.5" r="1.8" fill="#fff"/>
+<polygon points="43,48 57,48 50,58" fill="#F59E0B"/></svg>`;
+const egg=`<svg viewBox="0 0 100 100"><ellipse cx="50" cy="56" rx="30" ry="38" fill="#FFF8EC" stroke="#E0CFAE" stroke-width="3"/>
+<ellipse cx="40" cy="40" rx="8" ry="12" fill="#fff" opacity=".7"/></svg>`;
+const shell=`<svg viewBox="0 0 100 100"><path d="M18 62 L30 50 L40 64 L52 48 L64 64 L74 50 L84 62 L78 86 H24Z" fill="#FFF8EC" stroke="#E0CFAE" stroke-width="3"/></svg>`;
+
+/* ---------- 공통 ---------- */
+const $=s=>document.querySelector(s);
+const app=$('#app');
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const STAGE=['🥚','🐣','🐥','🐤','🐔'];
+const rnd=n=>Math.floor(Math.random()*n);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;};
+let token=0;                       // 화면이 바뀌면 진행 중인 게임을 멈춘다
+const alive=t=>t===token;
+
+const MODES={
+  whack:{name:'병아리 잡기',icon:'🐣',desc:'알에서 나온 병아리를 톡! 눌러요'},
+  color:{name:'색깔 순서 누르기',icon:'🌈',desc:'알려 주는 순서대로 같은 색 병아리를 눌러요'},
+  memory:{name:'위치 기억하기',icon:'🧠',desc:'병아리가 숨은 자리를 기억해 보세요'},
+  together:{name:'함께 잡기',icon:'👫',desc:'한 화면에서 둘이 왼쪽·오른쪽을 나눠 잡아요'}
+};
+
+function topbar(showHome){
+  return `<div class="top">
+   ${showHome?'<button class="btn sub" id="home">🏠 농장</button>':'<span></span>'}
+   <button class="btn sub" id="snd">${save.sound?'🔊 소리 켬':'🔇 소리 끔'}</button></div>`;
+}
+function bindTop(){
+  const h=$('#home');if(h)h.onclick=()=>{token++;home();};
+  $('#snd').onclick=e=>{save.sound=!save.sound;persist();e.target.textContent=save.sound?'🔊 소리 켬':'🔇 소리 끔';peep();};
+}
+
+/* ---------- 홈(병아리 농장 나무) ---------- */
+function home(){
+  token++;document.querySelectorAll('.overlay').forEach(o=>o.remove());
+  const total=Object.values(save.nodes).reduce((a,b)=>a+b,0);
+  const branches=Object.keys(MODES).map(k=>{
+    const m=MODES[k],n=save.nodes[k];
+    const nodes=[0,1,2,3,4].map(i=>`<div class="node ${i<n?'on':''}">${i<n?STAGE[i]:''}</div>`).join('');
+    return `<button class="branch" data-k="${k}">
+      <div class="b-title"><span>${m.icon} ${m.name}</span><small>${n>=5?'🌳 활짝 폈어요':n+' / 5'}</small></div>
+      <div class="b-desc">${m.desc}</div><div class="nodes">${nodes}</div></button>`;
+  }).join('');
+  app.innerHTML=topbar(false)+`
+   <h1>🥚 계란 한 판</h1>
+   <p class="sub-t">놀수록 우리 병아리가 쑥쑥 자라요</p>
+   <div class="farm-count">우리 농장 병아리 가족 <b style="color:var(--brand-d)">${total}</b>마리</div>
+   <div class="tree">${branches}<div class="root">🌱</div></div>`;
+  bindTop();
+  document.querySelectorAll('.branch').forEach(b=>b.onclick=()=>start(b.dataset.k));
+}
+
+function start(k){
+  token++;document.querySelectorAll('.overlay').forEach(o=>o.remove());
+  const t=token,lv=save.nodes[k];
+  app.innerHTML=topbar(true)+`<h1>${MODES[k].icon} ${MODES[k].name}</h1>
+    <div class="score" id="score"></div><div class="msg" id="msg"></div>
+    <div class="carton" id="carton"></div><div class="row" id="ctl"></div>`;
+  bindTop();
+  const carton=$('#carton');
+  const cells=[];
+  if(k==='together')carton.classList.add('cols4');
+  for(let i=0;i<12;i++){
+    const c=document.createElement('div');c.className='cell';c.setAttribute('role','button');
+    if(k==='together'){c.dataset.side=(i%4)<2?1:2;c.classList.add('p'+c.dataset.side);}
+    c.innerHTML=egg;carton.appendChild(c);cells.push(c);
+  }
+  const ctx={t,lv,cells,msg:s=>$('#msg').textContent=s,score:s=>$('#score').textContent=s,ctl:$('#ctl')};
+  ({whack:playWhack,color:playColor,memory:playMemory,together:playTogether})[k](ctx);
+}
+const setEgg=c=>{c.className='cell'+(c.dataset.side?' p'+c.dataset.side:'');c.innerHTML=egg;c.onclick=null;};
+const setChick=(c,col,label)=>{c.innerHTML=chick(col)+(label?`<span class="lbl">${label}</span>`:'');c.firstChild.classList.add('pop');};
+
+/* ---------- 1단계: 병아리 잡기 ---------- */
+async function playWhack(x){
+  const total=10, stay=3200-x.lv*350;
+  let hit=0,last=-1;
+  const wiggle=c=>()=>{c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');beep(330,.08,'sine',.08);};
+  x.cells.forEach(c=>c.onclick=wiggle(c));   // 빈 알을 눌러도 살짝 흔들리기만 한다
+  x.msg('알에서 병아리가 나오면 눌러 주세요!');
+  for(let n=0;n<total;n++){
+    if(!alive(x.t))return;
+    x.score(`병아리 ${n}마리 만났어요 · 잡은 병아리 ${hit}마리`);
+    let i;do{i=rnd(12);}while(i===last);last=i;
+    const c=x.cells[i];let tapped=false;
+    setChick(c,COLORS[rnd(5)].c);
+    c.onclick=()=>{if(tapped)return;tapped=true;hit++;peep();c.classList.add('hit');c.onclick=null;};
+    const end=Date.now()+stay;
+    while(Date.now()<end&&!tapped){await sleep(50);if(!alive(x.t))return;}
+    await sleep(tapped?350:0);
+    setEgg(c);c.onclick=wiggle(c);
+    await sleep(500);
+  }
+  x.score(`병아리 ${total}마리를 다 만났어요`);
+  finish(x,'whack',`병아리 ${hit}마리를 잡았어요!`);
+}
+
+/* ---------- 함께 잡기 (한 화면, 왼쪽/오른쪽) ---------- */
+async function playTogether(x){
+  const rounds=12, stay=3600-x.lv*300, got=[0,0], last=[-1,-1];
+  const wiggle=c=>()=>{c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');beep(330,.08,'sine',.08);};
+  const sideCells=s=>x.cells.map((c,i)=>i).filter(i=>x.cells[i].dataset.side==s);
+  x.cells.forEach(c=>c.onclick=wiggle(c));
+  const show=n=>x.score(`🧡 왼쪽 ${got[0]}마리 · 💙 오른쪽 ${got[1]}마리 · 함께 ${got[0]+got[1]}마리`);
+  x.msg('주황색 칸은 왼쪽 분, 파란색 칸은 오른쪽 분이 눌러요!');
+  show();
+  for(let n=0;n<rounds;n++){
+    if(!alive(x.t))return;
+    const state=[false,false],picks=[];
+    [1,2].forEach((s,si)=>{
+      let i;do{const opts=sideCells(s);i=opts[rnd(opts.length)];}while(i===last[si]);last[si]=i;
+      const c=x.cells[i];picks.push(c);
+      setChick(c,COLORS[rnd(5)].c);
+      c.onclick=()=>{if(state[si])return;state[si]=true;got[si]++;peep();c.classList.add('hit');c.onclick=null;show();};
+    });
+    const end=Date.now()+stay;
+    while(Date.now()<end&&!(state[0]&&state[1])){await sleep(50);if(!alive(x.t))return;}
+    await sleep(350);
+    picks.forEach(c=>{setEgg(c);c.onclick=wiggle(c);});
+    await sleep(450);
+  }
+  finish(x,'together',`둘이 합쳐서 병아리 ${got[0]+got[1]}마리를 잡았어요!`);
+}
+
+/* ---------- 2단계: 색깔 순서 누르기 ---------- */
+async function playColor(x){
+  const len=Math.min(3+Math.floor(x.lv/2),5),problems=3;
+  for(let p=0;p<problems;p++){
+    if(!alive(x.t))return;
+    x.score(`${p+1}번째 문제 / ${problems}`);
+    const cols=shuffle(COLORS).slice(0,len),pos=shuffle([...Array(12).keys()]).slice(0,len);
+    x.cells.forEach(setEgg);
+    pos.forEach((ci,k)=>setChick(x.cells[ci],cols[k].c,cols[k].n));
+    await sleep(500);
+    let solved=false;
+    while(!solved){
+      if(!alive(x.t))return;
+      let idx=0,busy=true;
+      x.ctl.innerHTML='';
+      x.msg('순서를 잘 보세요 👀');
+      pos.forEach(ci=>{x.cells[ci].onclick=null;x.cells[ci].querySelector('.num')?.remove();});
+      await sleep(600);
+      for(let k=0;k<len;k++){
+        if(!alive(x.t))return;
+        const c=x.cells[pos[k]];
+        x.msg(`${k+1}번째: ${cols[k].n}`);
+        c.firstChild.classList.remove('glow');void c.firstChild.offsetWidth;c.firstChild.classList.add('glow');
+        beep(440+k*110,.4,'triangle');
+        await sleep(1000);
+      }
+      x.msg('이제 같은 순서로 눌러 보세요!');
+      busy=false;
+      const result=await new Promise(res=>{
+        const btn=document.createElement('button');btn.className='btn sub';btn.textContent='👀 다시 보기';
+        btn.onclick=()=>res('again');x.ctl.innerHTML='';x.ctl.appendChild(btn);
+        pos.forEach((ci,k)=>{
+          const c=x.cells[ci];
+          c.onclick=()=>{
+            if(busy)return;
+            if(k===idx){
+              idx++;beep(440+k*110,.25,'triangle');
+              const b=document.createElement('span');b.className='num';b.textContent=idx;c.appendChild(b);
+              c.onclick=null;
+              if(idx===len)res('ok');
+            }else{
+              oops();c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');
+              x.msg('괜찮아요, 다시 한번 볼까요?');busy=true;setTimeout(()=>res('again'),900);
+            }
+          };
+        });
+      });
+      if(result==='ok'){solved=true;peep();x.msg('맞았어요! 👏');await sleep(1200);}
+    }
+  }
+  finish(x,'color','순서를 모두 기억하셨어요!');
+}
+
+/* ---------- 3단계: 위치 기억하기 ---------- */
+async function playMemory(x){
+  const k=Math.min(2+Math.floor(x.lv/2),5),show=4200-x.lv*300,problems=3;
+  for(let p=0;p<problems;p++){
+    if(!alive(x.t))return;
+    x.score(`${p+1}번째 문제 / ${problems}`);
+    x.cells.forEach(setEgg);
+    const pos=shuffle([...Array(12).keys()]).slice(0,k),cols=shuffle(COLORS);
+    let solved=false,miss=0;
+    while(!solved){
+      if(!alive(x.t))return;
+      x.ctl.innerHTML='';
+      x.msg(`병아리 ${k}마리가 어디 있는지 보세요 👀`);
+      x.cells.forEach(setEgg);
+      await sleep(500);
+      pos.forEach((ci,j)=>setChick(x.cells[ci],cols[j].c));
+      peep();
+      await sleep(show);
+      if(!alive(x.t))return;
+      pos.forEach(ci=>setEgg(x.cells[ci]));
+      x.msg('병아리가 있던 알을 눌러 보세요!');
+      const found=new Set();
+      await new Promise(res=>{
+        const btn=document.createElement('button');btn.className='btn sub';btn.textContent='👀 다시 보기';
+        btn.onclick=()=>res('again');x.ctl.innerHTML='';x.ctl.appendChild(btn);
+        x.cells.forEach((c,ci)=>{
+          c.onclick=async()=>{
+            if(found.has(ci)||c.dataset.lock)return;
+            if(pos.includes(ci)){
+              found.add(ci);peep();setChick(c,cols[pos.indexOf(ci)].c);c.onclick=null;
+              x.msg(`찾았어요! ${found.size} / ${k}`);
+              if(found.size===k){solved=true;await sleep(900);res('ok');}
+            }else{
+              miss++;oops();c.dataset.lock=1;c.innerHTML=shell;c.classList.add('shake');
+              x.msg('여기는 아니에요. 괜찮아요!');
+              if(miss>=3){const h=pos.find(q=>!found.has(q));x.cells[h].classList.add('glow');x.msg('힌트: 반짝이는 알을 눌러 보세요 ✨');}
+              setTimeout(()=>{if(!found.has(ci)){setEgg(c);delete c.dataset.lock;rebind();}},900);
+            }
+          };
+        });
+        function rebind(){/* 알이 다시 생기면 클릭 복구 */
+          x.cells.forEach((c2,i2)=>{if(!found.has(i2)&&!c2.onclick)c2.onclick=cells0[i2];});
+        }
+        const cells0=x.cells.map(c3=>c3.onclick);
+      });
+    }
+    x.msg('모두 찾았어요! 👏');cheer();await sleep(1300);
+  }
+  finish(x,'memory','숨은 병아리를 모두 찾으셨어요!');
+}
+
+/* ---------- 마무리 & 성장 ---------- */
+function finish(x,k,text){
+  if(!alive(x.t))return;
+  const before=save.nodes[k];
+  if(before<5)save.nodes[k]=before+1;
+  save.plays++;persist();cheer();
+  const n=save.nodes[k];
+  const grown=before<5?STAGE[before]:'🐔';
+  const o=document.createElement('div');o.className='overlay';
+  o.innerHTML=`<div class="modal"><div class="big">${grown}</div>
+    <h2>참 잘하셨어요!</h2><p>${text}<br>${before<5?`농장에 새 식구가 생겼어요! (${n} / 5)`:'이미 다 자란 나무예요. 더 놀아도 좋아요 🌳'}</p>
+    <div class="row"><button class="btn" id="again">한 번 더</button><button class="btn sub" id="goHome">🏠 농장으로</button></div></div>`;
+  document.body.appendChild(o);
+  $('#again').onclick=()=>{o.remove();start(k);};
+  $('#goHome').onclick=()=>{o.remove();home();};
+}
+home();
+</script>
+</body>
+</html>
