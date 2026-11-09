@@ -29,17 +29,20 @@ h1{margin:4px 0 2px;font-size:34px;text-align:center}
 .tree::before{content:"";position:absolute;left:12px;top:0;bottom:36px;width:12px;border-radius:6px;background:var(--line)}
 .root{position:absolute;left:-6px;bottom:0;font-size:44px}
 .branch{position:relative;display:block;width:100%;text-align:left;font:inherit;background:var(--card);
-  border:3px solid #EAD7B0;border-radius:22px;padding:14px 16px;margin-bottom:18px;cursor:pointer;color:var(--ink);
+  border:3px solid #EAD7B0;border-radius:22px;padding:10px 14px;margin-bottom:14px;cursor:pointer;color:var(--ink);
   box-shadow:0 5px 0 #E3C58A}
 .branch:active{transform:translateY(4px);box-shadow:0 1px 0 #E3C58A}
 .branch::before{content:"";position:absolute;left:-22px;top:50%;width:22px;height:10px;background:var(--line);border-radius:5px}
-.b-title{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:26px}
-.b-title small{font-size:18px;font-weight:600;color:#7a5a38}
-.b-desc{font-size:19px;color:#7a5a38;margin:2px 0 8px}
-.nodes{display:flex;gap:8px;justify-content:space-between}
-.node{flex:1;aspect-ratio:1;max-width:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:34px;background:#F4EBD6;border:3px dashed #D5BE90;color:#c9b27f}
+.b-title{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:24px}
+.b-title small{font-size:17px;font-weight:600;color:#7a5a38}
+.b-desc{font-size:17px;color:#7a5a38;margin:2px 0 8px}
+.nodes{display:flex;gap:8px;justify-content:flex-start}
+.node{flex:0 0 auto;width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:26px;background:#F4EBD6;border:3px dashed #D5BE90;color:#c9b27f}
 .node.on{background:#FFF2B8;border:3px solid var(--brand);color:inherit}
+.grp{position:relative;display:inline-block;background:#FFE9A8;border:3px solid var(--brand);border-radius:16px;
+  padding:3px 14px;font-weight:800;font-size:21px;margin:0 0 12px;color:var(--brand-d)}
+.grp::before{content:"";position:absolute;left:-37px;top:50%;width:34px;height:10px;background:var(--line);border-radius:5px;margin-top:-5px}
 .farm-count{text-align:center;font-size:24px;font-weight:700;margin:6px 0 4px}
 
 /* 달걀판 */
@@ -132,14 +135,15 @@ const alive=t=>t===token;
 
 const MODES={
   whack:{name:'병아리 잡기',icon:'🐣',desc:'알에서 나온 병아리를 톡! 눌러요'},
-  color:{name:'색깔 순서 누르기',icon:'🌈',desc:'알려 주는 순서대로 같은 색 병아리를 눌러요'},
+  color:{name:'색깔 순서 누르기',icon:'🌈',desc:'알려 주는 순서대로 눌러요'},
   memory:{name:'위치 기억하기',icon:'🧠',desc:'병아리가 숨은 자리를 기억해 보세요'},
-  together:{name:'함께 잡기',icon:'👫',desc:'한 화면에서 둘이 왼쪽·오른쪽을 나눠 잡아요'},
-  puzzle:{name:'병아리 그림 퍼즐',icon:'🧩',desc:'흩어진 조각을 눌러 바꿔서 그림을 맞춰요'},
-  maze:{name:'엄마 닭 찾기 미로',icon:'🌀',desc:'병아리가 엄마 닭에게 가도록 길을 찾아요'},
+  together:{name:'함께 잡기',icon:'👫',desc:'둘이 왼쪽·오른쪽을 나눠 잡아요'},
+  puzzle:{name:'병아리 그림 퍼즐',icon:'🧩',desc:'조각을 바꿔서 그림을 맞춰요'},
+  maze:{name:'엄마 닭 찾기 미로',icon:'🌀',desc:'병아리를 엄마 닭에게 데려가요'},
   coloring:{name:'병아리 색칠공부',icon:'🎨',desc:'좋아하는 색으로 그림을 칠해요'}
 };
 const CUSTOM=['puzzle','maze','coloring'];
+const GROUPS=[['🐣 병아리 놀이',['whack','together']],['🧠 기억력 놀이',['color','memory']],['🎨 그림 놀이',['puzzle','maze','coloring']]];
 
 function topbar(showHome){
   return `<div class="top">
@@ -155,13 +159,14 @@ function bindTop(){
 function home(){
   token++;document.querySelectorAll('.overlay').forEach(o=>o.remove());
   const total=Object.values(save.nodes).reduce((a,b)=>a+b,0);
-  const branches=Object.keys(MODES).map(k=>{
+  const branchHtml=k=>{
     const m=MODES[k],n=save.nodes[k];
     const nodes=[0,1,2,3,4].map(i=>`<div class="node ${i<n?'on':''}">${i<n?STAGE[i]:''}</div>`).join('');
     return `<button class="branch" data-k="${k}">
-      <div class="b-title"><span>${m.icon} ${m.name}</span><small>${n>=5?'🌳 활짝 폈어요':n+' / 5'}</small></div>
+      <div class="b-title"><span>${m.icon} ${m.name}</span><small>${n>=5?'🌳 완성!':n+' / 5'}</small></div>
       <div class="b-desc">${m.desc}</div><div class="nodes">${nodes}</div></button>`;
-  }).join('');
+  };
+  const branches=GROUPS.map(([t,ks])=>`<div class="grp">${t}</div>`+ks.map(branchHtml).join('')).join('');
   app.innerHTML=topbar(false)+`
    <h1>🥚 계란 한 판</h1>
    <p class="sub-t">놀수록 우리 병아리가 쑥쑥 자라요</p>
