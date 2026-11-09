@@ -82,7 +82,7 @@ h1{margin:4px 0 2px;font-size:34px;text-align:center}
 const KEY='egg-farm-v1';
 let save={nodes:{whack:0,color:0,memory:0},plays:0,sound:true};
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.nodes)save=Object.assign(save,s);}catch(e){}
-save.nodes=Object.assign({whack:0,color:0,memory:0,together:0},save.nodes);
+save.nodes=Object.assign({whack:0,color:0,memory:0,together:0,puzzle:0,maze:0,coloring:0},save.nodes);
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(save));}catch(e){}}
 
 /* ---------- 소리 ---------- */
@@ -134,8 +134,12 @@ const MODES={
   whack:{name:'병아리 잡기',icon:'🐣',desc:'알에서 나온 병아리를 톡! 눌러요'},
   color:{name:'색깔 순서 누르기',icon:'🌈',desc:'알려 주는 순서대로 같은 색 병아리를 눌러요'},
   memory:{name:'위치 기억하기',icon:'🧠',desc:'병아리가 숨은 자리를 기억해 보세요'},
-  together:{name:'함께 잡기',icon:'👫',desc:'한 화면에서 둘이 왼쪽·오른쪽을 나눠 잡아요'}
+  together:{name:'함께 잡기',icon:'👫',desc:'한 화면에서 둘이 왼쪽·오른쪽을 나눠 잡아요'},
+  puzzle:{name:'병아리 그림 퍼즐',icon:'🧩',desc:'흩어진 조각을 눌러 바꿔서 그림을 맞춰요'},
+  maze:{name:'엄마 닭 찾기 미로',icon:'🌀',desc:'병아리가 엄마 닭에게 가도록 길을 찾아요'},
+  coloring:{name:'병아리 색칠공부',icon:'🎨',desc:'좋아하는 색으로 그림을 칠해요'}
 };
+const CUSTOM=['puzzle','maze','coloring'];
 
 function topbar(showHome){
   return `<div class="top">
@@ -172,8 +176,12 @@ function start(k){
   const t=token,lv=save.nodes[k];
   app.innerHTML=topbar(true)+`<h1>${MODES[k].icon} ${MODES[k].name}</h1>
     <div class="score" id="score"></div><div class="msg" id="msg"></div>
-    <div class="carton" id="carton"></div><div class="row" id="ctl"></div>`;
+    ${CUSTOM.includes(k)?'<div class="stage" id="stage"></div>':'<div class="carton" id="carton"></div>'}<div class="row" id="ctl"></div>`;
   bindTop();
+  if(CUSTOM.includes(k)){
+    ({puzzle:playPuzzle,maze:playMaze,coloring:playColoring})[k]({t,lv,msg:s=>$('#msg').textContent=s,score:s=>$('#score').textContent=s,ctl:$('#ctl'),stage:$('#stage')});
+    return;
+  }
   const carton=$('#carton');
   const cells=[];
   if(k==='together')carton.classList.add('cols4');
@@ -361,5 +369,6 @@ function finish(x,k,text){
 }
 home();
 </script>
+<script src="extra.js"></script>
 </body>
 </html>
