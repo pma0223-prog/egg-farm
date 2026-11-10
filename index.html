@@ -31,11 +31,15 @@ h1{margin:4px 0 2px;font-size:34px;text-align:center}
 .branch{position:relative;display:block;width:100%;text-align:left;font:inherit;background:var(--card);
   border:3px solid #EAD7B0;border-radius:22px;padding:10px 14px;margin-bottom:14px;cursor:pointer;color:var(--ink);
   box-shadow:0 5px 0 #E3C58A}
-.branch:active{transform:translateY(4px);box-shadow:0 1px 0 #E3C58A}
+.branch:active:not(.done){transform:translateY(4px);box-shadow:0 1px 0 #E3C58A}
 .branch::before{content:"";position:absolute;left:-22px;top:50%;width:22px;height:10px;background:var(--line);border-radius:5px}
 .b-title{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:24px}
 .b-title small{font-size:17px;font-weight:600;color:#7a5a38}
 .b-desc{font-size:17px;color:#7a5a38;margin:2px 0 8px}
+.nodes button.node{font-family:inherit;cursor:pointer;box-shadow:0 3px 0 #D9B24A;position:relative}
+.nodes button.node:active{transform:translateY(3px);box-shadow:none}
+.node small{position:absolute;right:-4px;bottom:-4px;background:var(--brand);color:#fff;border-radius:9px;font-size:12px;font-weight:800;padding:0 5px;line-height:16px}
+.pick{font-size:16px;font-weight:700;color:var(--brand-d);margin:6px 0 0}
 .nodes{display:flex;gap:8px;justify-content:flex-start}
 .node{flex:0 0 auto;width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;
   font-size:26px;background:#F4EBD6;border:3px dashed #D5BE90;color:#c9b27f}
@@ -162,10 +166,11 @@ function home(){
   const total=Object.values(save.nodes).reduce((a,b)=>a+b,0);
   const branchHtml=k=>{
     const m=MODES[k],n=save.nodes[k];
-    const nodes=[0,1,2,3,4].map(i=>`<div class="node ${i<n?'on':''}">${i<n?STAGE[i]:''}</div>`).join('');
-    return `<button class="branch" data-k="${k}">
+    const done=n>=5;
+    const nodes=[0,1,2,3,4].map(i=>done?`<button class="node on" data-k="${k}" data-lv="${i}" aria-label="${i+1}단계">${STAGE[i]}<small>${i+1}</small></button>`:`<div class="node ${i<n?'on':''}">${i<n?STAGE[i]:''}</div>`).join('');
+    return `<div class="branch ${done?'done':''}" data-k="${k}" role="button" tabindex="0">
       <div class="b-title"><span>${m.icon} ${m.name}</span><small>${n>=5?'🌳 완성!':n+' / 5'}</small></div>
-      <div class="b-desc">${m.desc}</div><div class="nodes">${nodes}</div></button>`;
+      <div class="b-desc">${m.desc}</div><div class="nodes">${nodes}</div>${done?'<div class="pick">👆 그림을 누르면 그 단계를 다시 해볼 수 있어요</div>':''}</div>`;
   };
   const branches=GROUPS.map(([t,ks])=>`<div class="grp">${t}</div>`+ks.map(branchHtml).join('')).join('');
   app.innerHTML=topbar(false)+`
@@ -174,18 +179,19 @@ function home(){
    <div class="farm-count">우리 농장 병아리 가족 <b style="color:var(--brand-d)">${total}</b>마리</div>
    <div class="tree">${branches}<div class="root">🌱</div></div>`;
   bindTop();
-  document.querySelectorAll('.branch').forEach(b=>b.onclick=()=>start(b.dataset.k));
+  document.querySelectorAll('.branch').forEach(b=>{b.onclick=()=>start(b.dataset.k);b.onkeydown=e=>{if(e.target===b&&(e.key==='Enter'||e.key===' ')){e.preventDefault();start(b.dataset.k);}};});
+  document.querySelectorAll('.nodes button.node').forEach(n=>n.onclick=e=>{e.stopPropagation();start(n.dataset.k,+n.dataset.lv);});
 }
 
-function start(k){
+function start(k,lvPick){
   token++;document.querySelectorAll('.overlay').forEach(o=>o.remove());
-  const t=token,lv=save.nodes[k];
+  const t=token,fixed=lvPick!==undefined,lv=fixed?lvPick:save.nodes[k];
   app.innerHTML=topbar(true)+`<h1>${MODES[k].icon} ${MODES[k].name}</h1>
     <div class="score" id="score"></div><div class="msg" id="msg"></div>
     ${CUSTOM.includes(k)?'<div class="stage" id="stage"></div>':'<div class="carton" id="carton"></div>'}<div class="row" id="ctl"></div>`;
   bindTop();
   if(CUSTOM.includes(k)){
-    ({puzzle:playPuzzle,maze:playMaze,coloring:playColoring})[k]({t,lv,msg:s=>$('#msg').textContent=s,score:s=>$('#score').textContent=s,ctl:$('#ctl'),stage:$('#stage')});
+    ({puzzle:playPuzzle,maze:playMaze,coloring:playColoring})[k]({t,lv,fixed,msg:s=>$('#msg').textContent=s,score:s=>$('#score').textContent=s,ctl:$('#ctl'),stage:$('#stage')});
     return;
   }
   const carton=$('#carton');
@@ -196,7 +202,7 @@ function start(k){
     if(k==='together'){c.dataset.side=(i%4)<2?1:2;c.classList.add('p'+c.dataset.side);}
     c.innerHTML=egg;carton.appendChild(c);cells.push(c);
   }
-  const ctx={t,lv,cells,msg:s=>$('#msg').textContent=s,score:s=>$('#score').textContent=s,ctl:$('#ctl')};
+  const ctx={t,lv,fixed,cells,msg:s=>$('#msg').textContent=s,score:s=>$('#score').textContent=s,ctl:$('#ctl')};
   ({whack:playWhack,color:playColor,memory:playMemory,together:playTogether})[k](ctx);
 }
 const setEgg=c=>{c.className='cell'+(c.dataset.side?' p'+c.dataset.side:'');c.innerHTML=egg;c.onclick=null;};
@@ -364,13 +370,13 @@ function finish(x,k,text){
   if(before<5)save.nodes[k]=before+1;
   save.plays++;persist();cheer();
   const n=save.nodes[k];
-  const grown=before<5?STAGE[before]:'🐔';
+  const grown=x.fixed?STAGE[x.lv]:before<5?STAGE[before]:'🐔';
   const o=document.createElement('div');o.className='overlay';
   o.innerHTML=`<div class="modal"><div class="big">${grown}</div>
     <h2>참 잘하셨어요!</h2><p>${text}<br>${before<5?`농장에 새 식구가 생겼어요! (${n} / 5)`:'이미 다 자란 나무예요. 더 놀아도 좋아요 🌳'}</p>
     <div class="row"><button class="btn" id="again">한 번 더</button><button class="btn sub" id="goHome">🏠 농장으로</button></div></div>`;
   document.body.appendChild(o);
-  $('#again').onclick=()=>{o.remove();start(k);};
+  $('#again').onclick=()=>{o.remove();start(k,x.fixed?x.lv:undefined);};
   $('#goHome').onclick=()=>{o.remove();home();};
 }
 home();
