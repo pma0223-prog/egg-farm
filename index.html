@@ -167,7 +167,7 @@ function home(){
   const branchHtml=k=>{
     const m=MODES[k],n=save.nodes[k];
     const done=n>=5;
-    const nodes=[0,1,2,3,4].map(i=>done?`<button class="node on" data-k="${k}" data-lv="${i}" aria-label="${i+1}단계">${STAGE[i]}<small>${i+1}</small></button>`:`<div class="node ${i<n?'on':''}">${i<n?STAGE[i]:''}</div>`).join('');
+    const nodes=[0,1,2,3,4].map(i=>done?`<button class="node on" data-k="${k}" data-lv="${i}" aria-label="${i+1}단계">${STAGE[i]}</button>`:`<div class="node ${i<n?'on':''}">${i<n?STAGE[i]:''}</div>`).join('');
     return `<div class="branch ${done?'done':''}" data-k="${k}" role="button" tabindex="0">
       <div class="b-title"><span>${m.icon} ${m.name}</span><small>${n>=5?'🌳 완성!':n+' / 5'}</small></div>
       <div class="b-desc">${m.desc}</div><div class="nodes">${nodes}</div>${done?'<div class="pick">👆 그림을 누르면 그 단계를 다시 해볼 수 있어요</div>':''}</div>`;
